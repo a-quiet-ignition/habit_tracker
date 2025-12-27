@@ -1,0 +1,10 @@
+{% extends "habits/base.html" %}
+
+{% block content %}
+    <h2>{% if habit %}Edit{% else %}Create{% endif %} Habit</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{% if habit %}Update{% else %}Create{% endif %} Habit</button>
+    </form>
+{% endblock %}
