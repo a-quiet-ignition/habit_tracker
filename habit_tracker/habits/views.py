@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from .models import Habit, HabitLog
-from .forms import HabitForm, CustomUserForm
+from .forms import HabitForm, CustomUserForm, HabitLogForm
 
 # Create your views here.
 
@@ -31,8 +31,12 @@ class HabitDetailView(DetailView):
     model = Habit
     template_name = 'habits/habit_detail.html'
     context_object_name = 'habit'
-    
-    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['habit_logs'] = HabitLog.objects.filter(habit=self.object)
+        return context
+
 class HabitCreateView(CreateView):
     model = Habit
     form_class = HabitForm
@@ -59,3 +63,58 @@ class HabitDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Habit.objects.filter(user=self.request.user)
+    
+    
+# Habit Log Views
+class HabitLogCreateView(LoginRequiredMixin, CreateView):
+    model = HabitLog
+    form_class = HabitLogForm
+    template_name = 'habits/habitlog_form.html'
+    success_url = reverse_lazy('habit_list')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+    
+class HabitLogListView(LoginRequiredMixin, ListView):
+    model = HabitLog
+    template_name = 'habits/habitlog_list.html'
+    context_object_name = 'habit_logs'
+
+    def get_queryset(self):
+        return HabitLog.objects.filter(user=self.request.user)
+    
+class HabitLogDetailView(LoginRequiredMixin, DetailView):
+    model = HabitLog
+    template_name = 'habits/habitlog_detail.html'
+    context_object_name = 'habit_log'
+
+    def get_queryset(self):
+        return HabitLog.objects.filter(user=self.request.user)
+    
+class HabitLogUpdateView(LoginRequiredMixin, UpdateView):
+    model = HabitLog
+    fields = ['habit', 'date', 'completed']
+    template_name = 'habits/habitlog_form.html'
+    success_url = reverse_lazy('habitlog_list')
+
+    def get_queryset(self):
+        return HabitLog.objects.filter(user=self.request.user)
+    
+class HabitLogDeleteView(LoginRequiredMixin, DeleteView):
+    model = HabitLog
+    template_name = 'habits/habitlog_confirm_delete.html'
+    success_url = reverse_lazy('habitlog_list')
+
+    def get_queryset(self):
+        return HabitLog.objects.filter(user=self.request.user)
+    
+@login_required
+def dashboard(request):
+    habits = Habit.objects.filter(user=request.user)
+    habit_logs = HabitLog.objects.filter(user=request.user)
+    context = {
+        'habits': habits,
+        'habit_logs': habit_logs,
+    }
+    return render(request, 'habits/dashboard.html', context)

@@ -1,0 +1,12 @@
+{% extends 'habits/base.html' %}
+
+{% block content %}
+    <h2>Habit Logs for: {{ user.username }}</h2>
+    <ul>
+        {% for log in habit_logs %}
+        <li>{{ log.habit.name }},{{ log.date }}: {{ log.status }}</li>
+        {% empty %}
+        <li>No logs yet.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

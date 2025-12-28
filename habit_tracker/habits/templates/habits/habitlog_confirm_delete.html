@@ -1,0 +1,11 @@
+{% extends 'habits/base.html' %}
+
+{% block content %}
+  <h2>Confirm Delete Habit Log for: {{ habit_log.habit.name }}</h2>
+  <p>Are you sure you want to delete the log dated {{ habit_log.date }}?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Confirm Delete</button>
+    <a href="{% url 'habitlog_detail' habit_log.id %}">Cancel</a>
+  </form>
+{% endblock %}

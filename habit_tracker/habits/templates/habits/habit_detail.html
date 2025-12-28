@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+
 
 {% block content %}
     <h2>{{ habit.name }}</h2>
@@ -6,14 +6,16 @@
     <p>Created on: {{ habit.created_at }}</p>
 
     <h3>Logs</h3>
+    {% comment %} Logs for this specific habit {% endcomment %}
     <ul>
         {% for log in habit_logs %}
-            <li>{{ log.date }}: {{ log.status }}</li>
+            <li>{{ log.date }}: {{ log.status }} - <a href="{% url 'habitlog_detail' log.id %}">View Details</a></li>
         {% empty %}
             <li>No logs yet.</li>
         {% endfor %}
     </ul>
 
+    <a href="{% url 'habitlog_create' habit.id %}">Add New Log</a> |
     <a href="{% url 'habit_update' habit.id %}">Edit Habit</a> |
     <a href="{% url 'habit_delete' habit.id %}">Delete Habit</a> |
     <a href="{% url 'habit_list' %}">Back to Habit List</a>

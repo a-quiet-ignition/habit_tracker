@@ -1,0 +1,29 @@
+{% load static %}
+{% block extra_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'static/css/dashboard.css' %}">
+{% endblock %}
+
+{% comment %} Dashboard content {% endcomment %}
+{% block content %}
+    <h2>Dashboard</h2>
+    <p>Welcome to your dashboard!</p>
+
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Your Habits</h3>
+    <ul>
+        {% for habit in habits %}
+            <li><a href="{% url 'habit_detail' habit.id %}">{{ habit.name }}</a></li>
+        {% empty %}
+            <li>No habits yet. <a href="{% url 'habit_create' %}">Create one</a>.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        console.log("Dashboard loaded");
+    </script>
+{% endblock %}
+

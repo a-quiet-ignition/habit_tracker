@@ -35,4 +35,26 @@ class HabitForm(forms.ModelForm):
             raise forms.ValidationError("Habit with this name already exists.")
         return name
     
+
+# Habit Log Form
+class HabitLogForm(forms.ModelForm):
+    class Meta:
+        model = HabitLog
+        fields = ['habit', 'date', 'completed']
+        widgets = {
+            'habit': forms.Select(attrs={'class': 'form-control'}),
+            'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'completed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        habit = cleaned_data.get('habit')
+        date = cleaned_data.get('date')
+        
+        if HabitLog.objects.filter(habit=habit, date=date).exists():
+            raise forms.ValidationError("A log for this habit on this date already exists.")
+        
+        return cleaned_data
+    
     
